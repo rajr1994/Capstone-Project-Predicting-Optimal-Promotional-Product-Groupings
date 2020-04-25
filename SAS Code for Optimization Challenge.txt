@@ -1,0 +1,97 @@
+%web_drop_table(WORK.IMPORT);
+
+
+FILENAME REFFILE '/home/u41139158/SAS Optimization Challange/Sub-Category1.xlsx';
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=XLSX
+	OUT=WORK.IMPORT;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.IMPORT; RUN;
+
+proc optmodel;
+	/* Decision Variables */
+	var x1 binary integer, x2 binary integer, x3 binary integer, x4 binary integer, x5 binary integer, x6 binary integer, x7 binary integer;
+
+	/* ---------------------Constraints---------------------*/
+
+	/* Price Constraint */
+	con 6.11*x1 + 6.41*x2 + 6.27*x3 + 3.33*x4 + 3.34*x5 + 3.26*x6 + 4.03*x7 <=((6.11+6.41+6.27+3.33+3.34+3.26+4.03)/7) 
+		* (x1+x2+x3+x4+x5+x6+x7);
+	/* No of products Constraint */	
+	con x1+x2+x3+x4+x5+x6+x7 <=4;
+	con x1+x2+x3+x4+x5+x6+x7 >=2;
+	/* Quantity Constraint */
+	con 38190*x1*1.1 + 90490*x2*1.1 + 75900*x3*1.1 + 856807*x4*1.1 + 111989*x5*1.1 + 159414*x6*1.1 + 437119*x7*1.1  >=((38190+90490+75900+856807+111989+159414+437119)/7) 
+		* 2 * (x1+x2+x3+x4+x5+x6+x7);
+
+	/* Objective Function */
+	max z=(6.11*38190*x1*1.1) + (6.41*90490*x2*1.1) + (6.27*75900*x3*1.1) 
+		+ (3.33*856807*x4*1.1) + (3.34*111989*x5*1.1) + (3.26*159414*x6*1.1) 
+		+ (4.03*437119*x7*1.1) + (6.11*38190*(1-x1)) + (6.41*90490*(1-x2)) + (6.27*75900*(1-x3)) 
+		+ (3.33*856807*(1-x4)) + (3.34*111989*(1-x5)) + (3.26*159414*(1-x6)) 
+		+ (4.03*437119*(1-x7));
+	
+	expand;
+	
+	/* Solve the model */
+	solve with lso;
+	
+	/* Print the results */
+	print z x1 x2 x3 x4 x5 x6 x7;
+	
+quit;
+
+
+%web_drop_table(WORK.IMPORT);
+
+
+FILENAME REFFILE '/home/u41139158/SAS Optimization Challange/Sub-Category2.xlsx';
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=XLSX
+	OUT=WORK.IMPORT;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.IMPORT; RUN;
+
+data new;
+set import;
+curr_rev = Price * Quantity;
+run;
+
+proc optmodel;
+	/* Decision Variables */
+	var x1 binary integer, x2 binary integer, x3 binary integer, x4 binary integer, x5 binary integer, x6 binary integer, x7 binary integer, x8 binary integer;
+
+	/* ---------------------Constraints---------------------*/
+	
+	/* Price Constraint */
+	con 3.01*x1 + 2.93*x2 + 2.98*x3 + 2.92*x4 + 3.41*x5 + 7.12*x6 + 8.19*x7 + 6.59*x8 <=((3.01+2.93+2.98+2.92+3.41+7.12+8.19+6.59)/8) 
+		* (x1+x2+x3+x4+x5+x6+x7+x8);
+	/* No of products Constraint */
+	con x1+x2+x3+x4+x5+x6+x7+x8 <=4;
+	con x1+x2+x3+x4+x5+x6+x7+x8 >=2;
+	/* Quantity Constraint */
+	con 61108*x1*1.1 + 462998*x2*1.1 + 131069*x3*1.1 + 1191145*x4*1.1 + 47242*x5*1.1 + 36*x6*1.1 + 125042*x7*1.1 + 191933*x8*1.1 >=((61108+462998+131069+1191145+47242+36+125042+191933)/8) 
+		* 2 * (x1+x2+x3+x4+x5+x6+x7+x8);
+
+	/* Objective Function */
+	max z=(3.01*61108*x1*1.1) + (2.93*462998*x2*1.1) + (2.98*131069*x3*1.1) 
+		+ (2.92*1191145*x4*1.1) + (3.41*47242*x5*1.1) + (7.12*36*x6*1.1) 
+		+ (8.19*125042*x7*1.1) + (6.59*191933*x8*1.1) + (3.01*61108*(1-x1)) + (2.93*462998*(1-x2)) + (2.98*131069*(1-x3)) 
+		+ (2.92*1191145*(1-x4)) + (3.41*47242*(1-x5)) + (7.12*36*(1-x6)) 
+		+ (8.19*125042*(1-x7)) + (6.59*191933*(1-x8));
+	
+	expand;
+	
+	/* Solve the model */
+	solve with milp;
+	
+	/* Print the results */
+	print z x1 x2 x3 x4 x5 x6 x7 x8;
+	
+quit;
