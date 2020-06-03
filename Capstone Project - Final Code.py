@@ -42,14 +42,14 @@ ppg_names = pd.read_sql('select * from Current_PPG_Names', connection)
 c=0
 for i in raw_data['UPC_Unit']:
     c += 1
-    if i == 9300830045983:
+    if i == UPC_Unit5:
         raw_data['Sub_Brand_EPOS'][c] = "Sub_Brand1"
 
 # Excluding UPC Codes where Product Names and Size are not matching
 data0 = pysqldf("SELECT * FROM raw_data WHERE UPC_Unit NOT IN (UPC_Unit1, UPC_Unit2, UPC_Unit3, UPC_Unit4);")
 
 # Remove an erroneous particular record
-data01 = sqldf("select * from data0 where EPOS_Product_Name <> 'Product2';")
+data01 = pysqldf("select * from data0 where EPOS_Product_Name <> 'Product2';")
 
 # Aggregating the dataset
 data1 = pysqldf("SELECT UPC_Unit, Customer, EPOS_Link_Date, Category_EPOS, Product_Category_EPOS, Sub_Category_EPOS, Manufacturer, Brand_EPOS, Sub_Brand_EPOS, Variant_EPOS, Pack_Type, Size_EPOS, Segment_EPOS, Size_Range_EPOS, Unit_of_Measure, Short_Segment, MAX(Store_Count_EPOS) as Store_Count_EPOS, SUM(Unit_Sales_EPOS) as Unit_Sales_EPOS, SUM(Value_Sales_EPOS) as Value_Sales_EPOS FROM data01 GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;")
