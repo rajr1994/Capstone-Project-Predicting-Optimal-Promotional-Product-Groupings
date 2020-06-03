@@ -46,7 +46,7 @@ for i in raw_data['UPC_Unit']:
         raw_data['Sub_Brand_EPOS'][c] = "Sub_Brand1"
 
 # Excluding UPC Codes where Product Names and Size are not matching
-data0 = pysqldf("SELECT * FROM raw_data WHERE UPC_Unit NOT IN (884486046680, 8850006493144, 9300701412456, 9310714223291);")
+data0 = pysqldf("SELECT * FROM raw_data WHERE UPC_Unit NOT IN (UPC_Unit1, UPC_Unit2, UPC_Unit3, UPC_Unit4);")
 
 # Remove an erroneous particular record
 data01 = sqldf("select * from data0 where EPOS_Product_Name <> 'Product2';")
